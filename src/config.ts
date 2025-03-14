@@ -1,5 +1,3 @@
-import dotenv from 'dotenv'
-dotenv.config()
 import { Config } from './types/config'
 
 if (!process.env.WEBHOOK_PORT) throw new Error('WEBHOOK_SECRET is missing in .env')
