@@ -1,4 +1,4 @@
-import './services/BotService'
+import 'dotenv/config'
 import express from 'express'
 import TelegramBotService from './services/BotService'
 import { config } from './config'
