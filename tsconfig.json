@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ES2022", // Use modern JavaScript features compatible with Node.js
+        "module": "ESNext", // Use ES Modules
+        "moduleResolution": "bundler", // Resolve modules like Node.js
+        "outDir": "dist", // Output directory for compiled JavaScript files
+        "rootDir": "src", // Root directory of source files
+        "strict": true, // Enable strict type-checking
+        "esModuleInterop": true, // Allow default imports from CommonJS modules
+        "forceConsistentCasingInFileNames": true, // Enforce case-sensitive imports
+        "skipLibCheck": true, // Skip type checking for declaration files
+        "allowSyntheticDefaultImports": true, // Support default imports from non-ES modules
+        "resolveJsonModule": true, // Allow importing JSON files
+        "noImplicitAny": true, // Disallow implicit `any` types
+        "noUnusedLocals": false, // Error on unused local variables
+        "noFallthroughCasesInSwitch": true, // Error on fallthrough in switch statements
+        "typeRoots": ["./node_modules/@types"], // Look for type definitions in `node_modules`
+        "lib": ["ES2022"], // Include ES2022 features
+        "strictNullChecks": true, // Ensure null safety
+        "useDefineForClassFields": true, // Align class field behavior with ES standards
+        "noEmit": true // Do not emit output files
+    },
+    "include": ["src/**/*.ts"], // Include all TypeScript files in the `src` folder
+    "exclude": ["node_modules", "dist"] // Exclude `node_modules` and output folder
+}
