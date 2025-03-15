@@ -14,7 +14,7 @@ app.post('/webhook', (req, res) => {
     const secret = authorization.split('Bearer ')[1]
     if (!secret || secret !== process.env.WEBHOOK_SECRET) return res.sendStatus(403)
 
-    bot.sendMessage(1483691115, 'Hello Mikje')
+    bot.sendMessage(1483691115, 'Hello Mikkie Likkie')
 
     res.sendStatus(200)
 })
