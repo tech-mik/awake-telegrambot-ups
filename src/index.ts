@@ -15,6 +15,7 @@ app.post('/webhook', (req, res) => {
     if (!secret || secret !== process.env.WEBHOOK_SECRET) return res.sendStatus(403)
 
     const { upsName, event, timestamp } = req.body
+    console.log(req.body)
 
     bot.sendMessage(1483691115, `Hello ${secret}!, ${upsName} has ${event} at ${timestamp}`)
 
