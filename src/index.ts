@@ -6,9 +6,7 @@ import { config } from './config'
 const app = express()
 const bot = new TelegramBotService(config.telegram.token, config.telegram.options)
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+// Bot webhook for commands from Raspberry Pi
 app.post('/webhook', (req, res) => {
     const { authorization } = req.headers
     if (!authorization) return res.sendStatus(401)
@@ -16,7 +14,7 @@ app.post('/webhook', (req, res) => {
     const secret = authorization.split('Bearer ')[1]
     if (!secret || secret !== process.env.WEBHOOK_SECRET) return res.sendStatus(403)
 
-    bot.sendMessage(1483691115, 'Hello World')
+    bot.sendMessage(1483691115, 'Hello Mik')
 
     res.sendStatus(200)
 })
