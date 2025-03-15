@@ -4,6 +4,7 @@ import TelegramBotService from './services/BotService'
 import { config } from './config'
 
 const app = express()
+app.use(express.json())
 const bot = new TelegramBotService(config.telegram.token, config.telegram.options)
 
 // Bot webhook for commands from Raspberry Pi
