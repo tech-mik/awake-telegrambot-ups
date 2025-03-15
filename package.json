@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "concurrently \"npx babel src --out-dir dist --extensions .ts,.tsx --watch --source-maps\" \"nodemon --delay 150ms --watch dist dist/index.js\"",
-        "build": "npx babel src --out-dir dist --extensions .ts,.tsx"
+        "build": "npx babel src --out-dir dist --extensions .ts,.tsx && cp .env dist/.env && cp -r data dist/data"
     },
     "keywords": [],
     "author": "",
