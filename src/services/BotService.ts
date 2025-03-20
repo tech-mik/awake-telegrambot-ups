@@ -1,11 +1,12 @@
 import TelegramBot, { SendMessageOptions } from 'node-telegram-bot-api'
 import { config } from '../config'
+import logger from '../lib/logger'
 import AppState from '../lib/state'
+import { createMessage } from '../models/Messages'
 import { OnCommandOptions, TelegramError } from '../types/telegram'
 import { UpsEventLevel } from '../types/ups'
 import { isUserOnAdminList } from '../utils/telegram'
 import { generateTelegramMessage } from '../utils/ups'
-import logger from '../lib/logger'
 
 class TelegramBotService extends TelegramBot {
     constructor(token: string, options: TelegramBot.ConstructorOptions) {
@@ -634,14 +635,18 @@ class TelegramBotService extends TelegramBot {
 
     public async handleUpsEvent(level: UpsEventLevel, upsName: string, message: string, timestamp: string) {
         const telegramMsg = generateTelegramMessage(level, upsName, message, timestamp)
-        this.sendMessage(config.telegram.creatorId, telegramMsg)
+        await createMessage({ upsId: upsName, message: telegramMsg, timestamp })
 
-        const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
-        const messages = groups.map(([groupId]) => this.sendMessage(groupId, telegramMsg))
+        if (AppState.system.get('botStatus') === 'running') {
+            const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
+            if (groups.length < 1) return
 
-        Promise.all(messages).catch((error) => {
-            logger.error(error)
-        })
+            const messages = groups.map(([groupId]) => this.sendMessage(groupId, telegramMsg))
+
+            Promise.all(messages).catch((error) => {
+                logger.error(error)
+            })
+        }
     }
 }
 

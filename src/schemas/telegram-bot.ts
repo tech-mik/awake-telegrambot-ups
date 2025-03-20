@@ -41,10 +41,11 @@ export const messagesTable = sqliteTable(
     'messages',
     {
         id: int().primaryKey({ autoIncrement: true }),
-        upsId: int('ups_id')
+        upsId: text('ups_id')
             .notNull()
             .references(() => upsTable.upsId, { onDelete: 'cascade' }),
         message: text().notNull(),
+        timestamp: text().notNull(),
         dateCreated: int('date_created').$defaultFn(() => Date.now()),
         dateUpdated: int('date_updated').$onUpdateFn(() => Date.now()),
     },
