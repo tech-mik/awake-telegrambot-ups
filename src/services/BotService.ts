@@ -643,11 +643,9 @@ class TelegramBotService extends TelegramBot {
 
             const messages = groups.map(([groupId]) => this.sendMessage(groupId, telegramMsg))
 
-            try {
-                await Promise.all(messages)
-            } catch (error) {
-                logger.error('Failed to send message to Telegram:', error)
-            }
+            Promise.all(messages).catch((error) => {
+                logger.error(error)
+            })
         }
     }
 }
