@@ -641,9 +641,9 @@ class TelegramBotService extends TelegramBot {
             const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
             if (groups.length < 1) return
 
-            groups.forEach(async ([groupId, group]) => {
+            groups.forEach(async ([groupId]) => {
                 this.sendMessage(groupId, telegramMsg)
-                    .then((value) => console.log('Message sent', telegramMsg))
+                    .then(() => logger.info(`Event message sent to group ${groupId}: ${level} - ${upsName} - ${message}`))
                     .catch((error) => {
                         if ('code' in error && 'response' in error) {
                             const telegramError = error as TelegramError
