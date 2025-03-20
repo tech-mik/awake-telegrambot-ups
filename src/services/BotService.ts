@@ -2,7 +2,7 @@ import TelegramBot, { SendMessageOptions } from 'node-telegram-bot-api'
 import { config } from '../config'
 import AppState from '../lib/state'
 import { OnCommandOptions, TelegramError } from '../types/telegram'
-import { UpsEventLevel, UpsEventType, upsEventTypeTitle } from '../types/ups'
+import { UpsEventLevel } from '../types/ups'
 import { isUserOnAdminList } from '../utils/telegram'
 import { generateTelegramMessage } from '../utils/ups'
 

@@ -1,7 +1,8 @@
 import 'dotenv/config'
 import express from 'express'
-import TelegramBotService from './services/BotService'
 import { config } from './config'
+import logger from './lib/logger'
+import TelegramBotService from './services/BotService'
 import { UpsPayload } from './types/ups'
 
 const app = express()
