@@ -642,15 +642,19 @@ class TelegramBotService extends TelegramBot {
             if (groups.length < 1) return
 
             groups.forEach(async ([groupId, group]) => {
-                this.sendMessage(groupId, telegramMsg).catch((error) => {
-                    console.log(error)
-                    if ('code' in error && 'response' in error) {
-                        const telegramError = error as TelegramError
-                        console.log(telegramError)
-                        if (telegramError.code === 'ETELEGRAM') {
+                this.sendMessage(groupId, telegramMsg)
+                    .then((value) => console.log('Message sent', telegramMsg))
+                    .catch((error) => {
+                        if ('code' in error && 'response' in error) {
+                            const telegramError = error as TelegramError
+                            if (telegramError.code === 'ETELEGRAM') {
+                                AppState.deleteGroup(groupId)
+                                logger.error(`Group with id ${groupId} not found, deleting group`)
+                            } else {
+                                logger.error(`Something went wrong sending a event message to group ${groupId}`, error)
+                            }
                         }
-                    }
-                })
+                    })
             })
         }
     }
