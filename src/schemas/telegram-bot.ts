@@ -5,8 +5,8 @@ import { config } from '../config'
 export const upsTable = sqliteTable(
     'ups',
     {
-        upsId: int('ups_id').primaryKey(),
-        name: text().notNull(),
+        upsId: text('ups_id').primaryKey(),
+        location: text().notNull(),
         dateCreated: int('date_created')
             .$defaultFn(() => Date.now())
             .notNull(),

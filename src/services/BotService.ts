@@ -133,6 +133,29 @@ class TelegramBotService extends TelegramBot {
                 AppState.setPendingUserQuery(msg, 'WAITING_FOR_NEW_UPS')
                 this.sendMessage(msg.chat.id, 'Please enter the ID of the UPS')
 
+                const firstMessageHandler = (queryMsg: TelegramBot.Message) => {
+                    if (msg.chat.id !== queryMsg.chat.id) return
+                    if (msg.from?.id !== queryMsg.from?.id) return
+
+                    const query = AppState.pendingUserQueries.get(msg.chat.id)
+                    if (query && query.queryString === 'WAITING_FOR_NEW_UPS') {
+                        if (!queryMsg.text?.length) {
+                            return this.sendMessage(queryMsg.chat.id, 'Please enter a valid ID')
+                        }
+
+                        if ([...AppState.upsList.values()].some((ups) => ups.upsId === queryMsg.text)) {
+                            this.sendMessage(queryMsg.chat.id, 'UPS with that ID already exists')
+                            this.removeListener('message', firstMessageHandler)
+                            return
+                        }
+
+                        AppState.updatePendingUserQueryInput(msg.chat.id, queryMsg.text)
+                        this.sendMessage(queryMsg.chat.id, 'What is the location of the UPS?')
+                        this.removeListener('message', firstMessageHandler)
+                        this.on('message', secondMessageHandler)
+                    }
+                }
+
                 const secondMessageHandler = async (queryMsg: TelegramBot.Message) => {
                     if (msg.chat.id !== queryMsg.chat.id) return
                     if (msg.from?.id !== queryMsg.from?.id) return
@@ -144,15 +167,15 @@ class TelegramBotService extends TelegramBot {
                             return
                         }
 
-                        if ([...AppState.upsList.values()].some((ups) => ups.name === queryMsg.text)) {
+                        if ([...AppState.upsList.values()].some((ups) => ups.location === queryMsg.text)) {
                             this.sendMessage(queryMsg.chat.id, 'UPS with that name already exists, pick another one')
                             return
                         }
 
                         try {
                             const newUps = {
-                                upsId: Number(query.inputs[0]),
-                                name: queryMsg.text,
+                                upsId: query.inputs[0].trim(),
+                                location: queryMsg.text,
                                 dateCreated: Date.now(),
                             }
 
@@ -161,7 +184,7 @@ class TelegramBotService extends TelegramBot {
 
                             this.sendMessage(
                                 queryMsg.chat.id,
-                                `UPS with ID ${newUps.upsId} and name ${newUps.name} added.\r<pre>${upsList}</pre>`,
+                                `UPS with ID ${newUps.upsId} and name ${newUps.location} added.\r<pre>${upsList}</pre>`,
                                 { parse_mode: 'HTML' },
                             )
                         } catch (error) {
@@ -170,29 +193,6 @@ class TelegramBotService extends TelegramBot {
                             AppState.clearPendingUserQuery(msg.chat.id)
                             this.removeListener('message', secondMessageHandler)
                         }
-                    }
-                }
-
-                const firstMessageHandler = (queryMsg: TelegramBot.Message) => {
-                    if (msg.chat.id !== queryMsg.chat.id) return
-                    if (msg.from?.id !== queryMsg.from?.id) return
-
-                    const query = AppState.pendingUserQueries.get(msg.chat.id)
-                    if (query && query.queryString === 'WAITING_FOR_NEW_UPS') {
-                        if (!queryMsg.text || isNaN(Number(queryMsg.text))) {
-                            return this.sendMessage(queryMsg.chat.id, 'Please enter a valid ID')
-                        }
-
-                        if ([...AppState.upsList.values()].some((ups) => ups.upsId === Number(queryMsg.text))) {
-                            this.sendMessage(queryMsg.chat.id, 'UPS with that ID already exists')
-                            this.removeListener('message', firstMessageHandler)
-                            return
-                        }
-
-                        AppState.updatePendingUserQueryInput(msg.chat.id, queryMsg.text)
-                        this.sendMessage(queryMsg.chat.id, 'What is the name of the UPS?')
-                        this.removeListener('message', firstMessageHandler)
-                        this.on('message', secondMessageHandler)
                     }
                 }
 
@@ -214,7 +214,7 @@ class TelegramBotService extends TelegramBot {
                 const upsButtons = upsList.map((ups) => {
                     return [
                         {
-                            text: ups.name,
+                            text: ups.location,
                             callback_data: ups.upsId.toString(),
                         },
                     ]
@@ -247,7 +247,7 @@ class TelegramBotService extends TelegramBot {
                 const upsButtons = upsList.map((ups) => {
                     return [
                         {
-                            text: ups.name,
+                            text: ups.location,
                             callback_data: ups.upsId.toString(),
                         },
                     ]
@@ -279,7 +279,7 @@ class TelegramBotService extends TelegramBot {
                 const upsButtons = upsList.map((ups) => {
                     return [
                         {
-                            text: ups.name,
+                            text: ups.location,
                             callback_data: ups.upsId.toString(),
                         },
                     ]
@@ -318,7 +318,7 @@ class TelegramBotService extends TelegramBot {
 
                     return [
                         {
-                            text: ups.name,
+                            text: ups.location,
                             callback_data: ups.upsId.toString(),
                         },
                     ]
@@ -426,7 +426,7 @@ class TelegramBotService extends TelegramBot {
                         case 'WAITING_FOR_DELETE_UPS': {
                             // TODO: Implement unsubscriping groups from UPS when deleting
 
-                            const upsId = Number(data)
+                            const upsId = data.trim()
 
                             try {
                                 if (data === 'all') {
@@ -449,7 +449,7 @@ class TelegramBotService extends TelegramBot {
 
                                     await AppState.deleteUps(upsId)
 
-                                    this.sendMessage(msg.chat.id, `UPS "${ups1.name}" deleted`)
+                                    this.sendMessage(msg.chat.id, `UPS "${ups1.location}" deleted`)
                                     AppState.clearPendingUserQuery(msg.chat.id)
                                 }
                             } catch (error) {
@@ -458,7 +458,7 @@ class TelegramBotService extends TelegramBot {
                             break
                         }
                         case 'WAITING_FOR_UPDATE_UPS': {
-                            const upsId = Number(data)
+                            const upsId = data.trim()
                             const ups = AppState.upsList.get(upsId)
 
                             if (!ups) {
@@ -479,13 +479,13 @@ class TelegramBotService extends TelegramBot {
                                         return
                                     }
 
-                                    if ([...AppState.upsList.values()].some((ups) => ups.name === queryMsg.text)) {
+                                    if ([...AppState.upsList.values()].some((ups) => ups.location === queryMsg.text)) {
                                         this.sendMessage(queryMsg.chat.id, 'UPS with that name already exists, pick another one')
                                         return
                                     }
 
                                     try {
-                                        await AppState.updateUpsName(upsId, queryMsg.text)
+                                        await AppState.updateUpsLocation(upsId, queryMsg.text)
 
                                         this.sendMessage(queryMsg.chat.id, `UPS with ID ${upsId} updated to "${queryMsg.text}"`)
                                     } catch (error) {
@@ -503,7 +503,7 @@ class TelegramBotService extends TelegramBot {
                         }
                         case 'WAITING_FOR_SUBSCRIPE_BUTTONS': {
                             try {
-                                const upsIds = data.split(',').map(Number)
+                                const upsIds = data.split(',')
 
                                 await AppState.subscripeGroupToUps(msg.chat.id, upsIds)
 
@@ -515,7 +515,7 @@ class TelegramBotService extends TelegramBot {
                             break
                         }
                         case 'WAITING_FOR_UNSUBSCRIPE_BUTTONS': {
-                            const upsId = data.split(',').map(Number)
+                            const upsId = data.split(',')
                             const currentGroup = AppState.groups.get(msg.chat.id)
 
                             if (!currentGroup) {

@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { db } from '../lib/db'
-import { InsertUpsTable, upsTable, SelectUpsTable } from '../schemas/telegram-bot'
+import { InsertUpsTable, SelectUpsTable, upsTable } from '../schemas/telegram-bot'
 
 export async function addNewUps(ups: InsertUpsTable) {
     try {

@@ -32,7 +32,7 @@ class AppState {
                     ? group.upsIds
                           .split(',')
                           .filter((upsId) => Boolean(upsId))
-                          .map((upsId) => Number(upsId))
+                          .map((upsId) => upsId.trim())
                     : []
                 return {
                     ...group,
@@ -56,8 +56,8 @@ class AppState {
             const upsList = await db.select().from(upsTable).orderBy(asc(upsTable.dateCreated))
 
             if (upsList.length) {
-                upsList.forEach(({ name, upsId, dateCreated }) => {
-                    this.state.ups.set(Number(upsId), { upsId, name, dateCreated: new Date(dateCreated).toLocaleDateString() })
+                upsList.forEach(({ location, upsId, dateCreated }) => {
+                    this.state.ups.set(upsId.trim(), { upsId, location, dateCreated: new Date(dateCreated).toLocaleDateString() })
                 })
             }
         } catch (error) {
@@ -102,12 +102,12 @@ class AppState {
         await addNewUps(ups)
         this.state.ups.set(ups.upsId, newUps)
     }
-    public static async updateUpsName(upsId: SelectUpsTable['upsId'], newName: string) {
+    public static async updateUpsLocation(upsId: SelectUpsTable['upsId'], newLocation: string) {
         const ups = this.state.ups.get(upsId)
         if (!ups) return
 
-        await updateUpsById(upsId, { name: newName })
-        this.state.ups.set(upsId, { ...ups, name: newName })
+        await updateUpsById(upsId, { location: newLocation })
+        this.state.ups.set(upsId, { ...ups, location: newLocation })
     }
     public static async deleteUps(upsId: SelectUpsTable['upsId']) {
         await deleteUpsById(upsId)

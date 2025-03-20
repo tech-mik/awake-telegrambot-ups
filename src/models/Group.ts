@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { db } from '../lib/db'
-import { telegramGroupTable, SelectTelegramGroupTable, InsertTelegramGroupTable } from '../schemas/telegram-bot'
 import AppState from '../lib/state'
+import { InsertTelegramGroupTable, SelectTelegramGroupTable, telegramGroupTable } from '../schemas/telegram-bot'
 
 async function createGroup(groupId: InsertTelegramGroupTable['groupId']) {
     try {
@@ -34,7 +34,7 @@ async function subscripeGroupToUps(groupId: SelectTelegramGroupTable['groupId'],
         throw new Error('Error subscribing group to UPS(s)')
     }
 }
-async function unsubscripeGroupFromUps(groupId: SelectTelegramGroupTable['groupId'], upsIds: number[]) {
+async function unsubscripeGroupFromUps(groupId: SelectTelegramGroupTable['groupId'], upsIds: string[]) {
     try {
         const currentGroup = AppState.groups.get(groupId)
         if (!currentGroup) throw new Error('Group not found in system')
