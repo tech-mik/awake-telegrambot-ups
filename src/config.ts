@@ -5,7 +5,7 @@ if (isNaN(Number(process.env.WEBHOOK_PORT))) throw new Error('WEBHOOK_PORT is no
 if (!process.env.WEBHOOK_SECRET) throw new Error('WEBHOOK_PORT is missing in .env')
 if (!process.env.TELEGRAM_BOT_TOKEN) throw new Error('TELEGRAM_BOT_TOKEN is missing in .env')
 if (!process.env.TELEGRAM_CREATOR_ID) throw new Error('TELEGRAM_CREATOR_ID is missing in .env')
-if (process.env.TELEGRAM_CREATOR_ID.split(',').filter((id) => isNaN(Number(id))))
+if (process.env.TELEGRAM_CREATOR_ID.split(',').filter((id) => isNaN(Number(id))).length)
     throw new Error('TELEGRAM_CREATOR_ID is not a number')
 if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is missing in .env')
 
