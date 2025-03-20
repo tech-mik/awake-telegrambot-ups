@@ -19,7 +19,8 @@
         "express": "^4.21.2",
         "imap": "^0.8.19",
         "mailparser": "^3.7.1",
-        "node-telegram-bot-api": "^0.65.1"
+        "node-telegram-bot-api": "^0.65.1",
+        "winston": "^3.17.0"
     },
     "devDependencies": {
         "@babel/cli": "^7.26.4",
@@ -32,6 +33,7 @@
         "@types/imap": "^0.8.40",
         "@types/mailparser": "^3.4.4",
         "@types/node-telegram-bot-api": "^0.64.6",
+        "@types/winston": "^2.4.4",
         "babel-plugin-add-import-extension": "^1.6.0",
         "concurrently": "^9.1.2",
         "drizzle-kit": "^0.30.1",

@@ -625,6 +625,18 @@ class TelegramBotService extends TelegramBot {
     private async isSuperAdmin(userId: number) {
         return userId === config.telegram.creatorId || (await isUserOnAdminList(userId))
     }
+
+    public async handleUpsEvent(upsName: string, message: string, timestamp: string) {
+        this.sendMessage(config.telegram.creatorId, message)
+
+        const groupsMessages = AppState.groupsArray.map(async ([groupId, group]) => {
+            const upsIds = [...group.upsIds]
+            const upsMessages = upsIds.map(async (upsId) => {
+                const ups = AppState.upsList.get(upsId)
+                if (!ups) return
+            })
+        })
+    }
 }
 
 export default TelegramBotService
