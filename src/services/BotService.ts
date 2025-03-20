@@ -630,7 +630,7 @@ class TelegramBotService extends TelegramBot {
 
     public async handleUpsEvent(level: UpsEventLevel, upsName: string, message: string, timestamp: string) {
         const telegramMsg = generateTelegramMessage(level, upsName, message, timestamp)
-        this.sendMessage(config.telegram.creatorId, message)
+        this.sendMessage(config.telegram.creatorId, telegramMsg)
 
         // const groupsMessages = AppState.groupsArray.map(async ([groupId, group]) => {
         //     const upsIds = [...group.upsIds]

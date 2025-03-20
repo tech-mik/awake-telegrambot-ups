@@ -63,8 +63,6 @@ app.post('/webhook', (req, res) => {
             break
     }
 
-    bot.sendMessage(1483691115, `Hello ${secret}!, ${upsName} has ${event} at ${timestamp}`)
-
     res.sendStatus(200)
 })
 
