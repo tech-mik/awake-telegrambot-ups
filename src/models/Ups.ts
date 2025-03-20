@@ -31,7 +31,7 @@ export async function deleteAllUpsFromDb() {
     }
 }
 
-export async function updateUpsById(upsId: SelectUpsTable['upsId'], newUps: InsertUpsTable) {
+export async function updateUpsById(upsId: SelectUpsTable['upsId'], newUps: Partial<InsertUpsTable>) {
     try {
         await db
             .update(upsTable)

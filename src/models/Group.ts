@@ -22,7 +22,7 @@ async function deleteGroupById(groupId: SelectTelegramGroupTable['groupId']) {
         console.error(`Error deleting group width id ${groupId}`, error)
     }
 }
-async function subscripeGroupToUps(groupId: SelectTelegramGroupTable['groupId'], upsIds: number[]) {
+async function subscripeGroupToUps(groupId: SelectTelegramGroupTable['groupId'], upsIds: string[]) {
     try {
         const currentGroups = AppState.groups.get(groupId)?.upsIds || []
         const newIds = Array.from(new Set([...currentGroups, ...upsIds])).join(',')
