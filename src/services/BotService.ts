@@ -641,14 +641,15 @@ class TelegramBotService extends TelegramBot {
             const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
             if (groups.length < 1) return
 
-            groups.forEach(async ([groupId]) => {
-                try {
-                    await this.sendMessage(groupId, telegramMsg)
-                } catch (error) {
-                    if (error instanceof Error) {
-                        console.log(error.message)
+            groups.forEach(async ([groupId, group]) => {
+                this.sendMessage(groupId, telegramMsg).catch((error) => {
+                    if ('code' in error && 'response' in error) {
+                        const telegramError = error as TelegramError
+                        if (telegramError.code === 'ETELEGRAM') {
+                            AppState.unsubscripeGroupFromUps(groupId, Array.from(group.upsIds.values()))
+                        }
                     }
-                }
+                })
             })
         }
     }
