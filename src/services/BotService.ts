@@ -634,20 +634,22 @@ class TelegramBotService extends TelegramBot {
     }
 
     public async handleUpsEvent(level: UpsEventLevel, upsName: string, message: string, timestamp: string) {
-        try {
-            const telegramMsg = generateTelegramMessage(level, upsName, message, timestamp)
-            await createMessage({ upsId: upsName, message: telegramMsg, timestamp })
+        const telegramMsg = generateTelegramMessage(level, upsName, message, timestamp)
+        await createMessage({ upsId: upsName, message: telegramMsg, timestamp })
 
-            if (AppState.system.get('botStatus') === 'running') {
-                const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
-                if (groups.length < 1) return
+        if (AppState.system.get('botStatus') === 'running') {
+            const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
+            if (groups.length < 1) return
 
-                groups.forEach(([groupId]) => this.sendMessage(groupId, telegramMsg))
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                logger.error(error.message)
-            }
+            groups.forEach(async ([groupId]) => {
+                try {
+                    await this.sendMessage(groupId, telegramMsg)
+                } catch (error) {
+                    if (error instanceof Error) {
+                        console.log(error.message)
+                    }
+                }
+            })
         }
     }
 }
