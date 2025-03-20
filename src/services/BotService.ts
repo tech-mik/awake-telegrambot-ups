@@ -641,11 +641,7 @@ class TelegramBotService extends TelegramBot {
             const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
             if (groups.length < 1) return
 
-            const messages = groups.map(([groupId]) => this.sendMessage(groupId, telegramMsg))
-
-            Promise.all(messages).catch((error) => {
-                logger.error(error)
-            })
+            groups.forEach(([groupId]) => this.sendMessage(groupId, telegramMsg).catch((error) => logger.error(error)))
         }
     }
 }
