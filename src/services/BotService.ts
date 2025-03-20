@@ -163,12 +163,12 @@ class TelegramBotService extends TelegramBot {
                     const query = AppState.pendingUserQueries.get(msg.chat.id)
                     if (query && query.queryString === 'WAITING_FOR_NEW_UPS') {
                         if (!queryMsg.text) {
-                            this.sendMessage(queryMsg.chat.id, 'Please enter a valid name')
+                            this.sendMessage(queryMsg.chat.id, 'Please enter a valid location')
                             return
                         }
 
                         if ([...AppState.upsList.values()].some((ups) => ups.location === queryMsg.text)) {
-                            this.sendMessage(queryMsg.chat.id, 'UPS with that name already exists, pick another one')
+                            this.sendMessage(queryMsg.chat.id, 'UPS with that location already exists, pick another one')
                             return
                         }
 
@@ -184,7 +184,7 @@ class TelegramBotService extends TelegramBot {
 
                             this.sendMessage(
                                 queryMsg.chat.id,
-                                `UPS with ID ${newUps.upsId} and name ${newUps.location} added.\r<pre>${upsList}</pre>`,
+                                `UPS with ID ${newUps.upsId} and location ${newUps.location} added.\r<pre>${upsList}</pre>`,
                                 { parse_mode: 'HTML' },
                             )
                         } catch (error) {
@@ -466,7 +466,7 @@ class TelegramBotService extends TelegramBot {
                                 return
                             }
 
-                            this.sendMessage(msg.chat.id, `What is the new name for UPS with ID ${upsId}?`)
+                            this.sendMessage(msg.chat.id, `What is the new location for UPS with ID ${upsId}?`)
 
                             const updateUpsHandler = async (queryMsg: TelegramBot.Message) => {
                                 if (msg.chat.id !== queryMsg.chat.id) return
@@ -475,12 +475,15 @@ class TelegramBotService extends TelegramBot {
                                 const query = AppState.pendingUserQueries.get(msg.chat.id)
                                 if (query && query.queryString === 'WAITING_FOR_UPDATE_UPS') {
                                     if (!queryMsg.text) {
-                                        this.sendMessage(queryMsg.chat.id, 'Please enter a valid name')
+                                        this.sendMessage(queryMsg.chat.id, 'Please enter a valid location')
                                         return
                                     }
 
                                     if ([...AppState.upsList.values()].some((ups) => ups.location === queryMsg.text)) {
-                                        this.sendMessage(queryMsg.chat.id, 'UPS with that name already exists, pick another one')
+                                        this.sendMessage(
+                                            queryMsg.chat.id,
+                                            'UPS with that location already exists, pick another one',
+                                        )
                                         return
                                     }
 
