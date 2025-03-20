@@ -1,7 +1,5 @@
-import { UpsMessage, UpsTypeMsg } from '../types/ups'
+import { UpsTelegramMessage, upsEventTypeTitle } from '../types/ups'
 
-export const generateUpsMessage: UpsMessage = (upsName, event, type, timestamp) => {
-    const message = `${UpsTypeMsg[type]}\n` + `${upsName}\n` + `${event}\n` + `${timestamp}`
-
-    return message
+export const generateTelegramMessage: UpsTelegramMessage = (level, upsName, message, timestamp) => {
+    return `${upsEventTypeTitle[level]}\n` + `${upsName}\n` + `${message}\n` + `${timestamp}`
 }

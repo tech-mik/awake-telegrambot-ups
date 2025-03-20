@@ -3,7 +3,6 @@ import express from 'express'
 import TelegramBotService from './services/BotService'
 import { config } from './config'
 import { UpsPayload } from './types/ups'
-import { generateUpsMessage } from './utils/ups'
 
 const app = express()
 app.use(express.json())
@@ -29,9 +28,9 @@ app.post('/webhook', (req, res) => {
     switch (event) {
         case 'onbattery':
             logger.warn(`UPS ${upsName} is on battery at ${timestamp}`)
-            const message = generateUpsMessage(upsName, event, 'critical', timestamp)
+            const message = 'UPS is on battery'
 
-            bot.handleUpsEvent(upsName, message, timestamp)
+            bot.handleUpsEvent('warning', upsName, message, timestamp)
             break
 
         case 'offbattery':

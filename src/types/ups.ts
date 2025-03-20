@@ -26,11 +26,11 @@ export interface UpsPayload {
     upsName: string
 }
 
-export type eventType = 'informational' | 'warning' | 'critical'
-export enum UpsTypeMsg {
-    'informational' = 'ℹ️ Informational',
-    'warning' = '⚠️ Warning',
-    'critical' = '🚨 Critical',
-}
+export type UpsEventLevel = 'info' | 'warning' | 'critical'
 
-export type UpsMessage = (upsName: string, event: UpsEvents, type: eventType, timestamp: string) => string
+export const upsEventTypeTitle: Record<UpsEventLevel, string> = {
+    info: 'ℹ️ Informational',
+    warning: '⚠️ Warning',
+    critical: '🚨 Critical',
+}
+export type UpsTelegramMessage = (level: UpsEventLevel, upsName: string, message: string, timestamp: string) => string
