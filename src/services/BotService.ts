@@ -301,6 +301,7 @@ class TelegramBotService extends TelegramBot {
             },
             { group: true, admin: true },
         )
+
         this.onCommand(
             /\/unsubscripegroup/,
             async (msg) => {
@@ -340,7 +341,6 @@ class TelegramBotService extends TelegramBot {
         )
         // TODO: Add user to admin list
         this.on('chat_member', (msg) => {
-            console.log(msg)
             const newStatus = msg.new_chat_member?.status
             const oldStatus = msg.old_chat_member?.status
             const user = msg.new_chat_member?.user
@@ -561,6 +561,7 @@ class TelegramBotService extends TelegramBot {
 
         // Check if bot is added to a group by a superadmin
         this.on('my_chat_member', async (msg) => {
+            console.log(JSON.stringify(msg, null, 2))
             if (msg.new_chat_member?.status === 'member') {
                 if (await this.isSuperAdmin(msg.from.id)) {
                     this.sendMessage(msg.chat.id, config.telegram.welcomeMessage(msg.chat.title || 'this chat'), {
