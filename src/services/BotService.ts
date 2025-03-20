@@ -561,7 +561,6 @@ class TelegramBotService extends TelegramBot {
 
         // Check if bot is added to a group by a superadmin
         this.on('my_chat_member', async (msg) => {
-            console.log(JSON.stringify(msg, null, 2))
             if (msg.new_chat_member?.status === 'member') {
                 if (await this.isSuperAdmin(msg.from.id)) {
                     this.sendMessage(msg.chat.id, config.telegram.welcomeMessage(msg.chat.title || 'this chat'), {
@@ -596,7 +595,7 @@ class TelegramBotService extends TelegramBot {
         return super.onText(regexp, async (msg, match) => {
             try {
                 // Check if command is only for use by admin
-                if (msg.from?.id !== config.telegram.creatorId && options?.admin) {
+                if (!config.telegram.creatorId.some((id) => id === msg.from?.id) && options?.admin) {
                     if (!msg.from?.id) return
 
                     // Check if user is admin in group and in database
@@ -631,7 +630,7 @@ class TelegramBotService extends TelegramBot {
     }
 
     private async isSuperAdmin(userId: number) {
-        return userId === config.telegram.creatorId || (await isUserOnAdminList(userId))
+        return config.telegram.creatorId.some((id) => id === userId) || (await isUserOnAdminList(userId))
     }
 
     public async handleUpsEvent(level: UpsEventLevel, upsName: string, message: string, timestamp: string) {

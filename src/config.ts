@@ -5,7 +5,8 @@ if (isNaN(Number(process.env.WEBHOOK_PORT))) throw new Error('WEBHOOK_PORT is no
 if (!process.env.WEBHOOK_SECRET) throw new Error('WEBHOOK_PORT is missing in .env')
 if (!process.env.TELEGRAM_BOT_TOKEN) throw new Error('TELEGRAM_BOT_TOKEN is missing in .env')
 if (!process.env.TELEGRAM_CREATOR_ID) throw new Error('TELEGRAM_CREATOR_ID is missing in .env')
-if (isNaN(Number(process.env.TELEGRAM_CREATOR_ID))) throw new Error('TELEGRAM_CREATOR_ID is not a number')
+if (process.env.TELEGRAM_CREATOR_ID.split(',').filter((id) => isNaN(Number(id))))
+    throw new Error('TELEGRAM_CREATOR_ID is not a number')
 if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is missing in .env')
 
 export const config: Config = {
@@ -15,7 +16,7 @@ export const config: Config = {
     telegram: {
         token: process.env.TELEGRAM_BOT_TOKEN,
         options: { polling: true },
-        creatorId: Number(process.env.TELEGRAM_CREATOR_ID),
+        creatorId: process.env.TELEGRAM_CREATOR_ID.split(',').map(Number),
         welcomeMessage: (title) =>
             `############################################\n` +
             `###  UPS Telegram Bot Service\n` +

@@ -5,7 +5,7 @@ export interface Config {
     telegram: {
         token: string
         options: TelegramBot.ConstructorOptions
-        creatorId: number
+        creatorId: number[]
         welcomeMessage: (title: string) => string
     }
     system: {

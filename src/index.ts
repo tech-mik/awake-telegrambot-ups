@@ -29,7 +29,7 @@ app.post('/webhook', (req, res) => {
     switch (event) {
         case 'onbattery':
             logger.warn(`UPS ${upsName} is on battery at ${timestamp}`)
-            bot.handleUpsEvent('warning', upsName, 'UPS is on battery', timestamp)
+            bot.handleUpsEvent('critical', upsName, 'UPS is on battery', timestamp)
             break
 
         case 'offbattery':
@@ -39,7 +39,7 @@ app.post('/webhook', (req, res) => {
 
         case 'commfailure':
             logger.warn(`UPS ${upsName} has communication failure at ${timestamp}`)
-            bot.handleUpsEvent('warning', upsName, 'Lost communication with UPS', timestamp)
+            bot.handleUpsEvent('critical', upsName, 'Lost communication with UPS', timestamp)
             break
 
         case 'commok':
@@ -49,14 +49,18 @@ app.post('/webhook', (req, res) => {
 
         case 'failing':
             logger.warn(`UPS ${upsName} is failing at ${timestamp}`)
+            bot.handleUpsEvent('critical', upsName, 'Ups battery is detached', timestamp)
+
             break
 
         case 'battdetach':
             logger.warn(`UPS ${upsName} has battery detached at ${timestamp}`)
+            bot.handleUpsEvent('critical', upsName, 'Ups battery is detached', timestamp)
             break
 
         case 'battattach':
             logger.info(`UPS ${upsName} has battery attached at ${timestamp}`)
+            bot.handleUpsEvent('info', upsName, 'Ups battery is attached', timestamp)
             break
 
         case 'mainsback':
