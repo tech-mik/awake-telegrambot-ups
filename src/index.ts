@@ -29,21 +29,22 @@ app.post('/webhook', (req, res) => {
     switch (event) {
         case 'onbattery':
             logger.warn(`UPS ${upsName} is on battery at ${timestamp}`)
-            const message = 'UPS is on battery'
-
-            bot.handleUpsEvent('warning', upsName, message, timestamp)
+            bot.handleUpsEvent('warning', upsName, 'UPS is on battery', timestamp)
             break
 
         case 'offbattery':
             logger.info(`UPS ${upsName} is off battery at ${timestamp}`)
+            bot.handleUpsEvent('info', upsName, 'UPS is off battery', timestamp)
             break
 
         case 'commfailure':
             logger.warn(`UPS ${upsName} has communication failure at ${timestamp}`)
+            bot.handleUpsEvent('warning', upsName, 'Lost communication with UPS', timestamp)
             break
 
         case 'commok':
             logger.info(`UPS ${upsName} has communication restored at ${timestamp}`)
+            bot.handleUpsEvent('info', upsName, 'Communication with UPS restored', timestamp)
             break
 
         case 'failing':
@@ -56,6 +57,14 @@ app.post('/webhook', (req, res) => {
 
         case 'battattach':
             logger.info(`UPS ${upsName} has battery attached at ${timestamp}`)
+            break
+
+        case 'mainsback':
+            logger.info(`UPS ${upsName} has mains power restored at ${timestamp}`)
+            break
+
+        case 'powerout':
+            logger.warn(`UPS ${upsName} has power outage at ${timestamp}`)
             break
 
         default:

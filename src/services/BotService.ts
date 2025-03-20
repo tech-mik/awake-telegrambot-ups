@@ -5,6 +5,7 @@ import { OnCommandOptions, TelegramError } from '../types/telegram'
 import { UpsEventLevel } from '../types/ups'
 import { isUserOnAdminList } from '../utils/telegram'
 import { generateTelegramMessage } from '../utils/ups'
+import logger from '../lib/logger'
 
 class TelegramBotService extends TelegramBot {
     constructor(token: string, options: TelegramBot.ConstructorOptions) {
@@ -635,13 +636,12 @@ class TelegramBotService extends TelegramBot {
         const telegramMsg = generateTelegramMessage(level, upsName, message, timestamp)
         this.sendMessage(config.telegram.creatorId, telegramMsg)
 
-        // const groupsMessages = AppState.groupsArray.map(async ([groupId, group]) => {
-        //     const upsIds = [...group.upsIds]
-        //     const upsMessages = upsIds.map(async (upsId) => {
-        //         const ups = AppState.upsList.get(upsId)
-        //         if (!ups) return
-        //     })
-        // })
+        const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
+        const messages = groups.map(([groupId]) => this.sendMessage(groupId, telegramMsg))
+
+        Promise.all(messages).catch((error) => {
+            logger.error(error)
+        })
     }
 }
 
