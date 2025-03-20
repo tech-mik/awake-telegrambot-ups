@@ -646,7 +646,7 @@ class TelegramBotService extends TelegramBot {
                     if ('code' in error && 'response' in error) {
                         const telegramError = error as TelegramError
                         if (telegramError.code === 'ETELEGRAM') {
-                            AppState.unsubscripeGroupFromUps(groupId, Array.from(group.upsIds.values()))
+                            console.log(telegramError)
                         }
                     }
                 })
