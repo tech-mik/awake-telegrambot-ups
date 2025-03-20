@@ -642,10 +642,12 @@ class TelegramBotService extends TelegramBot {
                 const groups = AppState.groupsArray.filter(([_, group]) => group.upsIds.has(upsName))
                 if (groups.length < 1) return
 
-                groups.forEach(([groupId]) => this.sendMessage(groupId, telegramMsg).catch((error) => logger.error(error)))
+                groups.forEach(([groupId]) => this.sendMessage(groupId, telegramMsg))
             }
         } catch (error) {
-            console.log(error)
+            if (error instanceof Error) {
+                logger.error(error.message)
+            }
         }
     }
 }
