@@ -643,10 +643,11 @@ class TelegramBotService extends TelegramBot {
 
             groups.forEach(async ([groupId, group]) => {
                 this.sendMessage(groupId, telegramMsg).catch((error) => {
+                    console.log(error)
                     if ('code' in error && 'response' in error) {
                         const telegramError = error as TelegramError
+                        console.log(telegramError)
                         if (telegramError.code === 'ETELEGRAM') {
-                            console.log(telegramError)
                         }
                     }
                 })
