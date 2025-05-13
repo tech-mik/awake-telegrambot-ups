@@ -7,6 +7,7 @@ import { OnCommandOptions, TelegramError } from '../types/telegram'
 import { UpsEventLevel } from '../types/ups'
 import { isUserOnAdminList } from '../utils/telegram'
 import { generateTelegramMessage } from '../utils/ups'
+import { exec } from 'child_process'
 
 class TelegramBotService extends TelegramBot {
     constructor(token: string, options: TelegramBot.ConstructorOptions) {
@@ -358,10 +359,42 @@ class TelegramBotService extends TelegramBot {
         this.onCommand(/\/whoami/, async (msg) => {
             this.sendMessage(msg.chat.id, `<pre>${JSON.stringify(msg.from, null, 2)}</pre>`, { parse_mode: 'HTML' })
         })
-        // TODO: Get IMAP service status
+        // /getbotstatus - Check botstatus
         this.onCommand(/\/getbotstatus/, async (msg) => {
             super.sendMessage(msg.chat.id, `Bot status: ${AppState.botStatus}`)
         })
+
+        this.onCommand(
+            /\/getupsstatus/,
+            async (msg) => {
+                const chatId = msg.chat.id
+                const upsButtons = Array.from(AppState.upsList).map((ups) => {
+                    return [
+                        {
+                            text: ups[1].location,
+                            callback_data: ups[1].upsId.toString(),
+                        },
+                    ]
+                })
+
+                if (upsButtons.length < 1) {
+                    return this.sendMessage(chatId, 'No UPS available to get status from')
+                }
+
+                AppState.setPendingUserQuery(msg, 'WAITING_FOR_STATUS')
+
+                const options: SendMessageOptions = {
+                    reply_markup: {
+                        inline_keyboard: [...upsButtons],
+                        resize_keyboard: true,
+                        one_time_keyboard: true,
+                    },
+                }
+
+                this.sendMessage(chatId, 'From which UPS do you need the status:', options)
+            },
+            { group: true, admin: true },
+        )
         // /help - Get list of all commands
         this.onCommand(/\/help/, async (msg) => {
             const commands = [
@@ -534,6 +567,27 @@ class TelegramBotService extends TelegramBot {
                             } catch (error) {
                                 this.sendErrorMessage(msg.chat.id, error)
                             }
+                            break
+                        }
+                        case 'WAITING_FOR_STATUS': {
+                            const upsId = data.trim()
+                            const ups = AppState.upsList.get(upsId)
+
+                            if (!ups) {
+                                this.sendMessage(msg.chat.id, `UPS with ID ${upsId} not found`)
+                                return
+                            }
+
+                            exec(
+                                `/usr/local/bin/get-ups-status.sh ${ups.location}`,
+                                { timeout: 10000 },
+                                (err, stdout, stderr) => {
+                                    const result = err ? stderr || err.message : stdout
+                                    const reply = result.length > 4000 ? result.slice(0, 4000) + '\n...(truncated)' : result
+                                    this.sendMessage(msg.chat.id, `\`\`\`\n${reply}\n\`\`\``) // Markdown code block
+                                },
+                            )
+
                             break
                         }
                     }
