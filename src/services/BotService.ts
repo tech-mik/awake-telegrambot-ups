@@ -578,15 +578,16 @@ class TelegramBotService extends TelegramBot {
                                 return
                             }
 
-                            exec(
-                                `/home/miktenholt/get-ups-status.sh "${ups.upsId}"`,
-                                { timeout: 10000 },
-                                (err, stdout, stderr) => {
-                                    const result = err ? stderr || err.message : stdout
-                                    const reply = result.length > 4000 ? result.slice(0, 4000) + '\n...(truncated)' : result
-                                    this.sendMessage(msg.chat.id, `\`\`\`\n${reply}\n\`\`\``) // Markdown code block
-                                },
-                            )
+                            this.sendMessage(msg.chat.id, 'Fetching status from UPS...')
+
+                            exec(`/home/miktenholt/get-ups-status.sh "${ups.upsId}"`, { timeout: 200000 }, (err, output) => {
+                                if (err)
+                                    return this.sendMessage(
+                                        msg.chat.id,
+                                        `Something went wrong with getting the status, UPS might be offline.`,
+                                    )
+                                this.sendMessage(msg.chat.id, `${output}`) // Markdown code block
+                            })
                             break
                         }
                     }
