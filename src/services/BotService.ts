@@ -583,7 +583,6 @@ class TelegramBotService extends TelegramBot {
                                 const reply = result.length > 4000 ? result.slice(0, 4000) + '\n...(truncated)' : result
                                 this.sendMessage(msg.chat.id, `\`\`\`\n${reply}\n\`\`\``) // Markdown code block
                             })
-
                             break
                         }
                     }
