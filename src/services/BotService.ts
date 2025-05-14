@@ -578,11 +578,15 @@ class TelegramBotService extends TelegramBot {
                                 return
                             }
 
-                            exec(`~/get-ups-status.sh "${ups.upsId}"`, { timeout: 10000 }, (err, stdout, stderr) => {
-                                const result = err ? stderr || err.message : stdout
-                                const reply = result.length > 4000 ? result.slice(0, 4000) + '\n...(truncated)' : result
-                                this.sendMessage(msg.chat.id, `\`\`\`\n${reply}\n\`\`\``) // Markdown code block
-                            })
+                            exec(
+                                `/home/miktenholt/get-ups-status.sh "${ups.upsId}"`,
+                                { timeout: 10000 },
+                                (err, stdout, stderr) => {
+                                    const result = err ? stderr || err.message : stdout
+                                    const reply = result.length > 4000 ? result.slice(0, 4000) + '\n...(truncated)' : result
+                                    this.sendMessage(msg.chat.id, `\`\`\`\n${reply}\n\`\`\``) // Markdown code block
+                                },
+                            )
                             break
                         }
                     }
