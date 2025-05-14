@@ -586,7 +586,7 @@ class TelegramBotService extends TelegramBot {
                                         msg.chat.id,
                                         `Something went wrong with getting the status, UPS might be offline.`,
                                     )
-                                this.sendMessage(msg.chat.id, `${output}`, { parse_mode: 'MarkdownV2' }) // Markdown code block
+                                this.sendMessage(msg.chat.id, `${output}`, { parse_mode: 'Markdown' }) // Markdown code block
                             })
                             break
                         }
