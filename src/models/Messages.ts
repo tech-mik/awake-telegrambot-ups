@@ -6,6 +6,6 @@ export async function createMessage(message: InsertMessageTable) {
     try {
         await db.insert(messagesTable).values(message)
     } catch (error) {
-        logger.error('Error inserting message')
+        logger.error('Error inserting message', { error })
     }
 }
