@@ -696,7 +696,7 @@ class TelegramBotService extends TelegramBot {
             if (groups.length < 1) return
 
             groups.forEach(async ([groupId]) => {
-                this.sendMessage(groupId, telegramMsg, { parse_mode: 'Markdown' })
+                this.sendMessage(groupId, telegramMsg)
                     .then(() => logger.info(`Event message sent to group ${groupId}: ${level} - ${upsName} - ${message}`))
                     .catch((error) => {
                         if ('code' in error && 'response' in error) {
