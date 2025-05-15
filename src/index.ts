@@ -21,14 +21,14 @@ app.post('/webhook', (req, res) => {
         return res.sendStatus(403)
     }
 
-    const { upsName: name, event, timestamp } = req.body as UpsPayload
-    if (!name || !event || !timestamp) {
+    const { upsName, event, timestamp } = req.body as UpsPayload
+    if (!upsName || !event || !timestamp) {
         logger.warn('Received invalid request from Raspberry Pi')
         return res.sendStatus(400)
     }
 
-    const upsLocation = AppState.upsList.get(name)?.location
-    const upsName = upsLocation || name
+    // const upsLocation = AppState.upsList.get(name)?.location
+    // const upsName = upsLocation || name
 
     switch (event) {
         case 'onbattery':
