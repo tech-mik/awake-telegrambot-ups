@@ -1,5 +1,8 @@
+import AppState from '../lib/state'
 import { UpsTelegramMessage, upsEventTypeTitle } from '../types/ups'
 
 export const generateTelegramMessage: UpsTelegramMessage = (level, upsName, message, timestamp) => {
-    return `${upsEventTypeTitle[level]}\n` + `${upsName}\n` + `${message}\n` + `${timestamp}`
+    const upsLocation = AppState.upsList.get(upsName)?.location || ''
+
+    return `${upsEventTypeTitle[level]}\n` + `🔌 UPS: ${upsName} - ${upsLocation}\n` + `${message}\n` + `${timestamp}`
 }
