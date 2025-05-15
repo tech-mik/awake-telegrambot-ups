@@ -28,53 +28,51 @@ app.post('/webhook', (req, res) => {
     }
 
     const upsLocation = AppState.upsList.get(upsName)?.location
-    const upsNameCombi = upsLocation || upsName
-
-    console.log({ upsLocation, upsNameCombi })
+    const newUpsName = upsLocation || upsName
 
     switch (event) {
         case 'onbattery':
-            logger.warn(`UPS ${upsName} is on battery at ${timestamp}`)
-            bot.handleUpsEvent('critical', upsName, 'UPS is on battery', timestamp)
+            logger.warn(`UPS ${newUpsName} is on battery at ${timestamp}`)
+            bot.handleUpsEvent('critical', newUpsName, 'UPS is on battery', timestamp)
             break
 
         case 'offbattery':
-            logger.info(`UPS ${upsName} is off battery at ${timestamp}`)
-            bot.handleUpsEvent('info', upsName, 'UPS is off battery', timestamp)
+            logger.info(`UPS ${newUpsName} is off battery at ${timestamp}`)
+            bot.handleUpsEvent('info', newUpsName, 'UPS is off battery', timestamp)
             break
 
         case 'commfailure':
-            logger.warn(`UPS ${upsName} has communication failure at ${timestamp}`)
-            bot.handleUpsEvent('critical', upsName, 'Lost communication with UPS', timestamp)
+            logger.warn(`UPS ${newUpsName} has communication failure at ${timestamp}`)
+            bot.handleUpsEvent('critical', newUpsName, 'Lost communication with UPS', timestamp)
             break
 
         case 'commok':
-            logger.info(`UPS ${upsName} has communication restored at ${timestamp}`)
-            bot.handleUpsEvent('info', upsName, 'Communication with UPS restored', timestamp)
+            logger.info(`UPS ${newUpsName} has communication restored at ${timestamp}`)
+            bot.handleUpsEvent('info', newUpsName, 'Communication with UPS restored', timestamp)
             break
 
         case 'failing':
-            logger.warn(`UPS ${upsName} is failing at ${timestamp}`)
-            bot.handleUpsEvent('critical', upsName, 'Ups battery is detached', timestamp)
+            logger.warn(`UPS ${newUpsName} is failing at ${timestamp}`)
+            bot.handleUpsEvent('critical', newUpsName, 'Ups battery is detached', timestamp)
 
             break
 
         case 'battdetach':
-            logger.warn(`UPS ${upsName} has battery detached at ${timestamp}`)
-            bot.handleUpsEvent('critical', upsName, 'Ups battery is detached', timestamp)
+            logger.warn(`UPS ${newUpsName} has battery detached at ${timestamp}`)
+            bot.handleUpsEvent('critical', newUpsName, 'Ups battery is detached', timestamp)
             break
 
         case 'battattach':
-            logger.info(`UPS ${upsName} has battery attached at ${timestamp}`)
-            bot.handleUpsEvent('info', upsName, 'Ups battery is attached', timestamp)
+            logger.info(`UPS ${newUpsName} has battery attached at ${timestamp}`)
+            bot.handleUpsEvent('info', newUpsName, 'Ups battery is attached', timestamp)
             break
 
         case 'mainsback':
-            logger.info(`UPS ${upsName} has mains power restored at ${timestamp}`)
+            logger.info(`UPS ${newUpsName} has mains power restored at ${timestamp}`)
             break
 
         case 'powerout':
-            logger.warn(`UPS ${upsName} has power outage at ${timestamp}`)
+            logger.warn(`UPS ${newUpsName} has power outage at ${timestamp}`)
             break
 
         default:
