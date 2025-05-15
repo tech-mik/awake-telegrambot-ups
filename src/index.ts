@@ -27,8 +27,10 @@ app.post('/webhook', (req, res) => {
         return res.sendStatus(400)
     }
 
-    // const upsLocation = AppState.upsList.get(name)?.location
-    // const upsName = upsLocation || name
+    const upsLocation = AppState.upsList.get(upsName)?.location
+    const upsNameCombi = upsLocation || upsName
+
+    console.log({ upsLocation, upsNameCombi })
 
     switch (event) {
         case 'onbattery':
