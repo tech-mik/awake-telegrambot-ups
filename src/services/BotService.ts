@@ -364,37 +364,33 @@ class TelegramBotService extends TelegramBot {
             super.sendMessage(msg.chat.id, `Bot status: ${AppState.botStatus}`)
         })
 
-        this.onCommand(
-            /\/getupsstatus/,
-            async (msg) => {
-                const chatId = msg.chat.id
-                const upsButtons = Array.from(AppState.upsList).map((ups) => {
-                    return [
-                        {
-                            text: ups[1].location,
-                            callback_data: ups[1].upsId.toString(),
-                        },
-                    ]
-                })
-
-                if (upsButtons.length < 1) {
-                    return this.sendMessage(chatId, 'No UPS available to get status from')
-                }
-
-                AppState.setPendingUserQuery(msg, 'WAITING_FOR_STATUS')
-
-                const options: SendMessageOptions = {
-                    reply_markup: {
-                        inline_keyboard: [...upsButtons],
-                        resize_keyboard: true,
-                        one_time_keyboard: true,
+        this.onCommand(/\/getupsstatus/, async (msg) => {
+            const chatId = msg.chat.id
+            const upsButtons = Array.from(AppState.upsList).map((ups) => {
+                return [
+                    {
+                        text: ups[1].location,
+                        callback_data: ups[1].upsId.toString(),
                     },
-                }
+                ]
+            })
 
-                this.sendMessage(chatId, 'From which UPS do you need the status:', options)
-            },
-            { group: true, admin: true },
-        )
+            if (upsButtons.length < 1) {
+                return this.sendMessage(chatId, 'No UPS available to get status from')
+            }
+
+            AppState.setPendingUserQuery(msg, 'WAITING_FOR_STATUS')
+
+            const options: SendMessageOptions = {
+                reply_markup: {
+                    inline_keyboard: [...upsButtons],
+                    resize_keyboard: true,
+                    one_time_keyboard: true,
+                },
+            }
+
+            this.sendMessage(chatId, 'From which UPS location do you need the status:', options)
+        })
         // /help - Get list of all commands
         this.onCommand(/\/help/, async (msg) => {
             const commands = [
@@ -471,9 +467,7 @@ class TelegramBotService extends TelegramBot {
                                     }
 
                                     await AppState.deleteAllUps()
-
-                                    this.sendMessage(msg.chat.id, 'All UPSs deleted')
-                                    AppState.clearPendingUserQuery(msg.chat.id)
+                                    await AppState.this.sendMessage(msg.chat.id, 'All UPSs deleted')
                                 } else {
                                     const ups1 = AppState.upsList.get(upsId)
 
@@ -485,11 +479,13 @@ class TelegramBotService extends TelegramBot {
                                     await AppState.deleteUps(upsId)
 
                                     this.sendMessage(msg.chat.id, `UPS "${ups1.location}" deleted`)
-                                    AppState.clearPendingUserQuery(msg.chat.id)
                                 }
                             } catch (error) {
                                 this.sendErrorMessage(msg.chat.id, error)
+                            } finally {
+                                AppState.clearPendingUserQuery(msg.chat.id)
                             }
+
                             break
                         }
                         case 'WAITING_FOR_UPDATE_UPS': {
@@ -548,6 +544,8 @@ class TelegramBotService extends TelegramBot {
                                 this.sendMessage(msg.chat.id, `Group subscribed to UPSs with ID(s): ${upsIds.join(', ')}`)
                             } catch (error) {
                                 this.sendErrorMessage(msg.chat.id, error)
+                            } finally {
+                                AppState.clearPendingUserQuery(msg.chat.id)
                             }
 
                             break
@@ -566,6 +564,8 @@ class TelegramBotService extends TelegramBot {
                                 this.sendMessage(msg.chat.id, `Group unsubscribed from UPS with ID ${upsId}`)
                             } catch (error) {
                                 this.sendErrorMessage(msg.chat.id, error)
+                            } finally {
+                                AppState.clearPendingUserQuery(msg.chat.id)
                             }
                             break
                         }
@@ -578,16 +578,21 @@ class TelegramBotService extends TelegramBot {
                                 return
                             }
 
-                            this.sendMessage(msg.chat.id, 'Fetching status from UPS...')
+                            this.sendMessage(msg.chat.id, 'Fetching status from UPS... This might take a few seconds...')
 
-                            exec(`/home/miktenholt/get-ups-status.sh "${ups.upsId}"`, { timeout: 200000 }, (err, output) => {
+                            exec(`/home/miktenholt/get-ups-status.sh "${ups.upsId}"`, { timeout: 10000 }, (err, output) => {
                                 if (err)
                                     return this.sendMessage(
                                         msg.chat.id,
                                         `Something went wrong with getting the status, UPS might be offline.`,
                                     )
-                                this.sendMessage(msg.chat.id, `${output}`, { parse_mode: 'Markdown' }) // Markdown code block
+
+                                const message = `*UPS Status:*\n` + `${output}`
+                                this.sendMessage(msg.chat.id, `${message}`, { parse_mode: 'Markdown' })
                             })
+
+                            AppState.clearPendingUserQuery(msg.chat.id)
+
                             break
                         }
                     }
