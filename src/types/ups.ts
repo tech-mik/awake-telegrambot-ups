@@ -29,8 +29,8 @@ export interface UpsPayload {
 export type UpsEventLevel = 'info' | 'warning' | 'critical'
 
 export const upsEventTypeTitle: Record<UpsEventLevel, string> = {
-    info: 'ℹ️ Informational',
-    warning: '⚠️ Warning',
-    critical: '🚨 Critical',
+    info: 'ℹ️ *Event:* Informational',
+    warning: '⚠️ *Event:* Warning',
+    critical: '🚨 *Event:* Critical',
 }
 export type UpsTelegramMessage = (level: UpsEventLevel, upsName: string, message: string, timestamp: string) => string

@@ -5,7 +5,7 @@ export const generateTelegramMessage: UpsTelegramMessage = (level, upsName, mess
     const upsLocation = AppState.upsList.get(upsName)?.location || ''
     return (
         `${upsEventTypeTitle[level]}\n` +
-        `*${upsName} - ${upsLocation}*\n` +
+        `🔌 *${upsName} - ${upsLocation}*\n` +
         `${message}\n` +
         `${new Date(timestamp).toLocaleDateString()}`
     )
