@@ -4,6 +4,7 @@ import { config } from './config'
 import logger from './lib/logger'
 import TelegramBotService from './services/BotService'
 import { UpsPayload } from './types/ups'
+import AppState from './lib/state'
 
 const app = express()
 app.use(express.json())
@@ -20,11 +21,14 @@ app.post('/webhook', (req, res) => {
         return res.sendStatus(403)
     }
 
-    const { upsName, event, timestamp } = req.body as UpsPayload
-    if (!upsName || !event || !timestamp) {
+    const { upsName: name, event, timestamp } = req.body as UpsPayload
+    if (!name || !event || !timestamp) {
         logger.warn('Received invalid request from Raspberry Pi')
         return res.sendStatus(400)
     }
+
+    const upsLocation = AppState.upsList.get(name)?.location
+    const upsName = `${name} (${upsLocation})`
 
     switch (event) {
         case 'onbattery':

@@ -394,6 +394,7 @@ class TelegramBotService extends TelegramBot {
         // /help - Get list of all commands
         this.onCommand(/\/help/, async (msg) => {
             const commands = [
+                { command: '/getstate', description: 'Get the current state of the bot', admin: true },
                 { command: '/wakebot', description: 'Wake up the bot', admin: true },
                 { command: '/gotosleep', description: 'Shutdown the bot', admin: true },
                 { command: '/getgroupid', description: 'Get the group ID', admin: true },
@@ -402,18 +403,12 @@ class TelegramBotService extends TelegramBot {
                 { command: '/addups', description: 'Add a new UPS', admin: true },
                 { command: '/deleteups', description: 'Delete a UPS', admin: true },
                 { command: '/updateups', description: 'Update a UPS', admin: true },
-                { command: '/subscripegroup', description: 'Subscripe to a group', admin: true },
-                { command: '/unsubscripegroup', description: 'Unsubscripe from a group', admin: true },
-                { command: '/addadmin', description: 'Add user to admin list', admin: true },
-                { command: '/removeadmin', description: 'Remove user from admin list', admin: true },
-                { command: '/startimapservice', description: 'Start IMAP service', admin: true },
-                { command: '/stopimapservice', description: 'Stop IMAP service', admin: true },
-                { command: '/restartimapservice', description: 'Restart IMAP service', admin: true },
-                { command: '/getimapstatus', description: 'Get IMAP service status', admin: true },
+                { command: '/subscripegroup', description: 'Subscribe to a UPS for this group', admin: true },
+                { command: '/unsubscripegroup', description: 'Unsubscribe from a UPS for this group', admin: true },
                 { command: '/whoami', description: 'Get your user info', admin: false },
                 { command: '/getbotstatus', description: 'Get the current status of the bot', admin: false },
-                { command: '/getlastupsmessage', description: 'Get last message from UPSs', admin: false },
-                { command: '/gettodayupsmessage', description: 'Get all messages from today from UPSs', admin: false },
+                { command: '/getupsstatus', description: 'Get the status of a specific UPS', admin: false },
+                { command: '/help', description: 'Get list of all commands', admin: false },
             ]
 
             const adminCommands = commands.filter((command) => command.admin)
@@ -467,7 +462,7 @@ class TelegramBotService extends TelegramBot {
                                     }
 
                                     await AppState.deleteAllUps()
-                                    await AppState.this.sendMessage(msg.chat.id, 'All UPSs deleted')
+                                    await this.sendMessage(msg.chat.id, 'All UPSs deleted')
                                 } else {
                                     const ups1 = AppState.upsList.get(upsId)
 
